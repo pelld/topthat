@@ -555,6 +555,10 @@ button { font: inherit; }
    00F. MOBILE
    ============================================================================ */
 
+.mobile-result-overlay {
+  display: none;
+}
+
 @media (max-width: 760px) {
   body {
     overflow-x: hidden;
@@ -744,16 +748,16 @@ button { font: inherit; }
     min-height: 0;
     height: 100%;
     max-height: 100%;
-    border-radius: 16px;
-    grid-template-rows: minmax(105px, 34%) 1fr;
+    border-radius: 14px;
+    grid-template-rows: minmax(88px, 30%) 1fr;
   }
 
   .hero {
-    padding: 12px;
+    padding: 10px;
   }
 
   .hero h2 {
-    font-size: clamp(1.75rem, 9vw, 2.6rem);
+    font-size: clamp(1.55rem, 8vw, 2.25rem);
   }
 
   .hero .type {
@@ -762,9 +766,9 @@ button { font: inherit; }
   }
 
   .fact {
-    margin-top: 5px;
-    font-size: .7rem;
-    line-height: 1.2;
+    margin-top: 4px;
+    font-size: .64rem;
+    line-height: 1.15;
   }
 
   .stats {
@@ -773,21 +777,72 @@ button { font: inherit; }
   }
 
   .stat {
-    min-height: 38px;
-    padding: 0 7px;
+    min-height: 34px;
+    padding: 0 6px;
   }
 
   .stat button {
-    min-height: 38px;
+    min-height: 34px;
   }
 
   .stat-name,
   .stat-value {
-    font-size: .78rem;
+    font-size: .74rem;
   }
 
+  .mobile-result-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    padding: 18px;
+    background: rgba(20,18,14,.22);
+    pointer-events: none;
+  }
+
+  .mobile-result-overlay.hidden {
+    display: none !important;
+  }
+
+  .mobile-result-box {
+    width: min(330px, 92vw);
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    background: #fffdf8;
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 18px;
+    text-align: center;
+  }
+
+  .mobile-result-kicker {
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: var(--muted);
+    font-size: .66rem;
+    font-weight: 900;
+  }
+
+  .mobile-result-title {
+    margin-top: 3px;
+    font-size: 2.2rem;
+    line-height: 1;
+    font-weight: 950;
+  }
+
+  .mobile-result-detail {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: .82rem;
+    line-height: 1.3;
+  }
+
+  .mobile-result-box.win .mobile-result-title { color: var(--win); }
+  .mobile-result-box.loss .mobile-result-title { color: var(--loss); }
+  .mobile-result-box.draw .mobile-result-title { color: var(--draw); }
+
   .actions {
-    min-height: 34px;
+    min-height: 30px;
   }
 
   .action {
@@ -966,6 +1021,14 @@ button { font: inherit; }
 
   </div>
 </section>
+
+<div class="mobile-result-overlay hidden" id="mobileResultOverlay" aria-live="polite">
+  <div class="mobile-result-box" id="mobileResultBox">
+    <div class="mobile-result-kicker" id="mobileResultKicker">Result</div>
+    <div class="mobile-result-title" id="mobileResultTitle">WIN</div>
+    <div class="mobile-result-detail" id="mobileResultDetail"></div>
+  </div>
+</div>
 
 
 <script>
@@ -1213,6 +1276,21 @@ function updateScore() {
   document.getElementById("draws").textContent = score.draws;
 }
 
+function showMobileResult(type, title, detail, duration = 900) {
+  if (!window.matchMedia("(max-width: 760px)").matches) return;
+
+  const overlay = document.getElementById("mobileResultOverlay");
+  const box = document.getElementById("mobileResultBox");
+
+  box.className = `mobile-result-box ${type}`;
+  document.getElementById("mobileResultTitle").textContent = title;
+  document.getElementById("mobileResultDetail").textContent = detail;
+
+  overlay.classList.remove("hidden");
+
+  setTimeout(() => overlay.classList.add("hidden"), duration);
+}
+
 
 /* ============================================================================
    02E. CARD RENDERING
@@ -1383,7 +1461,12 @@ function playRound() {
       `;
 
       updateScore();
-      setTimeout(() => cascadeWin(challengerSide), 750);
+      showMobileResult(
+        "win",
+        "WIN",
+        `${currentCard.name}: ${formatValue(meta, currentValue)} beats ${challengerCard.name}: ${formatValue(meta, challengerValue)}`
+      );
+      setTimeout(() => cascadeWin(challengerSide), 900);
 
     } else if (playerLoses) {
       score.losses++;
@@ -1403,6 +1486,12 @@ function playRound() {
       `;
 
       updateScore();
+      showMobileResult(
+        "loss",
+        "LOSS",
+        `${challengerCard.name}: ${formatValue(meta, challengerValue)} beats ${currentCard.name}: ${formatValue(meta, currentValue)}`,
+        1200
+      );
 
     } else {
       score.draws++;
@@ -1421,7 +1510,12 @@ function playRound() {
       `;
 
       updateScore();
-      setTimeout(() => resetAfterDraw(challengerSide), 750);
+      showMobileResult(
+        "draw",
+        "DRAW",
+        `Both are ${formatValue(meta, currentValue)}`
+      );
+      setTimeout(() => resetAfterDraw(challengerSide), 900);
     }
 
   }, 260);
