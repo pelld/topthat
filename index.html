@@ -841,6 +841,18 @@ button { font: inherit; }
   .mobile-result-box.loss .mobile-result-title { color: var(--loss); }
   .mobile-result-box.draw .mobile-result-title { color: var(--draw); }
 
+  .mobile-result-action {
+    width: 100%;
+    margin-top: 14px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--ink);
+    color: white;
+    padding: 11px 14px;
+    cursor: pointer;
+    font-weight: 900;
+  }
+
   .actions {
     min-height: 30px;
   }
@@ -1027,6 +1039,7 @@ button { font: inherit; }
     <div class="mobile-result-kicker" id="mobileResultKicker">Result</div>
     <div class="mobile-result-title" id="mobileResultTitle">WIN</div>
     <div class="mobile-result-detail" id="mobileResultDetail"></div>
+    <button class="mobile-result-action" id="mobileResultAction" type="button">Keep going</button>
   </div>
 </div>
 
@@ -1276,20 +1289,35 @@ function updateScore() {
   document.getElementById("draws").textContent = score.draws;
 }
 
-function showMobileResult(type, title, detail, duration = 900) {
-  if (!window.matchMedia("(max-width: 760px)").matches) return;
+let mobileResultAction = null;
+
+function showMobileResult(type, title, detail, actionLabel, action) {
+  if (!window.matchMedia("(max-width: 760px)").matches) return false;
 
   const overlay = document.getElementById("mobileResultOverlay");
   const box = document.getElementById("mobileResultBox");
+  const actionButton = document.getElementById("mobileResultAction");
 
   box.className = `mobile-result-box ${type}`;
   document.getElementById("mobileResultTitle").textContent = title;
   document.getElementById("mobileResultDetail").textContent = detail;
+  actionButton.textContent = actionLabel;
 
+  mobileResultAction = action;
   overlay.classList.remove("hidden");
 
-  setTimeout(() => overlay.classList.add("hidden"), duration);
+  return true;
 }
+
+document.getElementById("mobileResultAction").addEventListener("click", () => {
+  const overlay = document.getElementById("mobileResultOverlay");
+  const action = mobileResultAction;
+
+  overlay.classList.add("hidden");
+  mobileResultAction = null;
+
+  if (action) action();
+});
 
 
 /* ============================================================================
@@ -1461,12 +1489,17 @@ function playRound() {
       `;
 
       updateScore();
-      showMobileResult(
+      const mobileWin = showMobileResult(
         "win",
         "WIN",
-        `${currentCard.name}: ${formatValue(meta, currentValue)} beats ${challengerCard.name}: ${formatValue(meta, challengerValue)}`
+        `${currentCard.name}: ${formatValue(meta, currentValue)} beats ${challengerCard.name}: ${formatValue(meta, challengerValue)}`,
+        "Keep going",
+        () => cascadeWin(challengerSide)
       );
-      setTimeout(() => cascadeWin(challengerSide), 900);
+
+      if (!mobileWin) {
+        setTimeout(() => cascadeWin(challengerSide), 900);
+      }
 
     } else if (playerLoses) {
       score.losses++;
@@ -1490,7 +1523,8 @@ function playRound() {
         "loss",
         "LOSS",
         `${challengerCard.name}: ${formatValue(meta, challengerValue)} beats ${currentCard.name}: ${formatValue(meta, currentValue)}`,
-        1200
+        "Start again",
+        () => newGame()
       );
 
     } else {
@@ -1510,12 +1544,17 @@ function playRound() {
       `;
 
       updateScore();
-      showMobileResult(
+      const mobileDraw = showMobileResult(
         "draw",
         "DRAW",
-        `Both are ${formatValue(meta, currentValue)}`
+        `Both are ${formatValue(meta, currentValue)}`,
+        "Continue",
+        () => resetAfterDraw(challengerSide)
       );
-      setTimeout(() => resetAfterDraw(challengerSide), 900);
+
+      if (!mobileDraw) {
+        setTimeout(() => resetAfterDraw(challengerSide), 900);
+      }
     }
 
   }, 260);
