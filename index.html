@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top Trumps Solo</title>
+<style>
+/* ============================================================================
+   00A. BASE
+   ============================================================================ */
+
+:root {
+  --bg: #f2efe6;
+  --panel: #fffdf8;
+  --ink: #171717;
+  --muted: #737373;
+  --line: #d7d1c3;
+  --accent: #111111;
+  --win: #177245;
+  --loss: #a12c2c;
+  --draw: #80691b;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.9), transparent 32%),
+    var(--bg);
+}
+
+button { font: inherit; }
+
+.screen {
+  min-height: 100vh;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* ============================================================================
+   00B. HOME
+   ============================================================================ */
+
+.home-shell {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 28px 22px 40px;
+}
+
+.home-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 7vw, 5.4rem);
+  line-height: .9;
+  letter-spacing: -.07em;
+}
+
+.brand p {
+  margin: 14px 0 0;
+  max-width: 700px;
+  color: var(--muted);
+  font-size: 1.03rem;
+}
+
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.topic-card {
+  position: relative;
+  min-height: 250px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--panel);
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  box-shadow: 0 20px 60px rgba(40,34,22,.08);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.topic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 28px 70px rgba(40,34,22,.12);
+}
+
+.topic-visual {
+  position: absolute;
+  inset: 0;
+  opacity: .95;
+}
+
+.topic-card.animals .topic-visual {
+  background:
+    radial-gradient(circle at 75% 30%, rgba(255,255,255,.28), transparent 18%),
+    linear-gradient(135deg, #d9d0b9, #9fb3a4);
+}
+
+.topic-card.countries .topic-visual {
+  background:
+    linear-gradient(30deg, transparent 48%, rgba(255,255,255,.12) 49%, transparent 50%),
+    linear-gradient(135deg, #cad5d1, #b7c4a2);
+}
+
+.topic-card.space .topic-visual {
+  background:
+    radial-gradient(circle at 72% 25%, #f7f3dd 0 2%, transparent 2.2%),
+    radial-gradient(circle at 84% 54%, #f7f3dd 0 1%, transparent 1.2%),
+    linear-gradient(135deg, #1e2230, #4b536b);
+}
+
+.topic-card.vehicles .topic-visual {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), transparent 50%),
+    linear-gradient(135deg, #b6b2a9, #7c8a92);
+}
+
+.topic-card.big-things .topic-visual {
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, transparent 1px 18px),
+    linear-gradient(135deg, #d9c6b3, #b89d82);
+}
+
+.topic-card.chaos .topic-visual {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,.28), transparent 18%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,.18), transparent 16%),
+    linear-gradient(135deg, #c8b4d6, #86a7a5);
+}
+
+.topic-copy {
+  position: relative;
+  z-index: 1;
+  min-height: 250px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(180deg, transparent 28%, rgba(0,0,0,.58));
+  color: white;
+}
+
+.topic-copy .eyebrow {
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .72rem;
+  font-weight: 900;
+  opacity: .8;
+}
+
+.topic-copy h2 {
+  margin: 6px 0 7px;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: .95;
+  letter-spacing: -.055em;
+}
+
+.topic-copy p {
+  margin: 0;
+  max-width: 560px;
+  opacity: .9;
+}
+
+.topic-meta {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.topic-chip {
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(255,255,255,.10);
+  border-radius: 999px;
+  padding: 6px 9px;
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.chaos-note {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: .92rem;
+}
+
+
+/* ============================================================================
+   00C. GAME HEADER
+   ============================================================================ */
+
+.game-shell {
+  width: min(1120px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 18px 22px 26px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 18px;
+}
+
+.game-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.game-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-btn,
+.change-topic-btn {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.7);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.game-title-copy h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.game-title-copy p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: .92rem;
+}
+
+.score {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pill {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.72);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 800;
+  font-size: .9rem;
+}
+
+.instruction {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.55);
+  border-radius: 18px;
+  padding: 12px 15px;
+  color: var(--muted);
+  font-size: .95rem;
+}
+
+.instruction strong {
+  color: var(--ink);
+}
+
+
+/* ============================================================================
+   00D. GAME BOARD
+   ============================================================================ */
+
+.game-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+
+.slot {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.slot.empty {
+  visibility: hidden;
+}
+
+.card-label {
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-size: .72rem;
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.card-label.yours {
+  color: var(--accent);
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  min-height: 540px;
+  box-shadow: 0 24px 70px rgba(40,34,22,.10);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 220px 1fr;
+}
+
+.card.current {
+  box-shadow: 0 30px 80px rgba(30,26,20,.15);
+}
+
+.card.enter-left { animation: enterLeft .42s ease both; }
+.card.enter-right { animation: enterRight .42s ease both; }
+.card.exit-left { animation: exitLeft .42s ease both; }
+.card.exit-right { animation: exitRight .42s ease both; }
+.card.promote { animation: promote .34s ease both; }
+
+@keyframes enterLeft {
+  from { opacity: 0; transform: translateX(-70px) scale(.97); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes enterRight {
+  from { opacity: 0; transform: translateX(70px) scale(.97); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes exitLeft {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to   { opacity: 0; transform: translateX(-70px) scale(.97); }
+}
+
+@keyframes exitRight {
+  from { opacity: 1; transform: translateX(0) scale(1); }
+  to   { opacity: 0; transform: translateX(70px) scale(.97); }
+}
+
+@keyframes promote {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+  100% { transform: scale(1); }
+}
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 22px;
+}
+
+.hero.animals { background: linear-gradient(135deg, #ddd4c2, #aebfac); }
+.hero.countries { background: linear-gradient(135deg, #d5dedb, #b8c79e); }
+.hero.space { background: linear-gradient(135deg, #24293a, #4b546d); color: white; }
+.hero.vehicles { background: linear-gradient(135deg, #c5c2ba, #89969d); }
+.hero.big-things { background: linear-gradient(135deg, #dccab5, #b89e86); }
+.hero.chaos { background: linear-gradient(135deg, #ceb8d8, #8baaaa); }
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(120deg, rgba(255,255,255,.08) 0 1px, transparent 1px 12px);
+  pointer-events: none;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.hero h2 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: .9;
+  letter-spacing: -.055em;
+}
+
+.hero .type {
+  margin-top: 8px;
+  font-weight: 800;
+  opacity: .68;
+}
+
+.fact {
+  margin-top: 9px;
+  font-size: .88rem;
+  max-width: 560px;
+  opacity: .82;
+}
+
+.stats {
+  display: grid;
+  padding: 12px 18px 20px;
+}
+
+.stat {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 14px;
+  min-height: 54px;
+  border-bottom: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0 10px;
+}
+
+.stat:last-child {
+  border-bottom: 0;
+}
+
+.stat button {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 54px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.stat-name {
+  justify-self: start;
+  text-align: left;
+  font-weight: 800;
+}
+
+.stat-value {
+  justify-self: end;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 900;
+}
+
+.stat.selectable:hover,
+.stat.selectable:focus-within {
+  background: #f3eee3;
+}
+
+.stat.selected {
+  outline: 2px solid var(--accent);
+  background: #eee7d8;
+}
+
+.stat.winner { background: rgba(23,114,69,.11); }
+.stat.loser { background: rgba(161,44,44,.11); }
+.stat.drawer { background: rgba(128,105,27,.11); }
+
+
+/* ============================================================================
+   00E. RESULT + ACTIONS
+   ============================================================================ */
+
+.result-column {
+  width: 150px;
+  text-align: center;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.vs {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.72);
+  font-weight: 950;
+  font-size: 1.15rem;
+}
+
+.result {
+  min-height: 76px;
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.result small {
+  font-weight: 750;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.result.win { color: var(--win); }
+.result.loss { color: var(--loss); }
+.result.draw { color: var(--draw); }
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.action {
+  border: 0;
+  border-radius: 999px;
+  padding: 13px 20px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.action.primary {
+  background: var(--accent);
+  color: white;
+}
+
+.action.secondary {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.action:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+
+/* ============================================================================
+   00F. MOBILE
+   ============================================================================ */
+
+@media (max-width: 760px) {
+  .home-shell,
+  .game-shell {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .topic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-top,
+  .game-topbar {
+    flex-direction: column;
+  }
+
+  .score {
+    justify-content: flex-start;
+  }
+
+  .game-board {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .result-column {
+    width: 100%;
+    grid-template-columns: auto 1fr;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .vs {
+    width: 54px;
+    height: 54px;
+  }
+
+  .result {
+    min-height: 54px;
+  }
+
+  .card {
+    min-height: 0;
+    grid-template-rows: 170px 1fr;
+  }
+
+  .hero h2 {
+    font-size: 2.5rem;
+  }
+
+  .slot.empty {
+    display: none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ==========================================================================
+     01A. HOME SCREEN
+     ========================================================================== -->
+
+<section class="screen" id="homeScreen">
+  <div class="home-shell">
+
+    <div class="home-top">
+      <div class="brand">
+        <h1>Beat the Card</h1>
+        <p>Pick a topic, choose the strongest stat on your card, and keep the run alive. Win a challenger and it becomes the card you have to play next.</p>
+      </div>
+    </div>
+
+    <div class="topic-grid">
+
+      <button class="topic-card animals" data-topic="animals">
+        <div class="topic-visual"></div>
+        <div class="topic-copy">
+          <div class="eyebrow">50-card deck</div>
+          <h2>Animals</h2>
+          <p>Speed, size, lifespan and rarity. From peregrine falcons to blue whales.</p>
+          <div class="topic-meta">
+            <span class="topic-chip">Speed</span>
+            <span class="topic-chip">Weight</span>
+            <span class="topic-chip">Length</span>
+          </div>
+        </div>
+      </button>
+
+      <button class="topic-card countries" data-topic="countries">
+        <div class="topic-visual"></div>
+        <div class="topic-copy">
+          <div class="eyebrow">50-card deck</div>
+          <h2>Countries</h2>
+          <p>Compare real-world scale: area, population, coastline and highest point.</p>
+          <div class="topic-meta">
+            <span class="topic-chip">Area</span>
+            <span class="topic-chip">Population</span>
+            <span class="topic-chip">Highest point</span>
+          </div>
+        </div>
+      </button>
+
+      <button class="topic-card space" data-topic="space">
+        <div class="topic-visual"></div>
+        <div class="topic-copy">
+          <div class="eyebrow">50-card deck</div>
+          <h2>Space</h2>
+          <p>Planets, moons and dwarf planets with diameter, gravity, mass and orbit facts.</p>
+          <div class="topic-meta">
+            <span class="topic-chip">Diameter</span>
+            <span class="topic-chip">Gravity</span>
+            <span class="topic-chip">Mass</span>
+          </div>
+        </div>
+      </button>
+
+      <button class="topic-card vehicles" data-topic="vehicles">
+        <div class="topic-visual"></div>
+        <div class="topic-copy">
+          <div class="eyebrow">50-card deck</div>
+          <h2>Vehicles</h2>
+          <p>Cars, trains, aircraft and strange machines measured by speed, power and size.</p>
+          <div class="topic-meta">
+            <span class="topic-chip">Speed</span>
+            <span class="topic-chip">Power</span>
+            <span class="topic-chip">Weight</span>
+          </div>
+        </div>
+      </button>
+
+      <button class="topic-card big-things" data-topic="big-things">
+        <div class="topic-visual"></div>
+        <div class="topic-copy">
+          <div class="eyebrow">50-card deck</div>
+          <h2>Big Things</h2>
+          <p>Statues, towers, giant roadside attractions and other objects that exist mostly to be enormous.</p>
+          <div class="topic-meta">
+            <span class="topic-chip">Height</span>
+            <span class="topic-chip">Weight</span>
+            <span class="topic-chip">Age</span>
+          </div>
+        </div>
+      </button>
+
+      <button class="topic-card chaos" data-topic="chaos">
+        <div class="topic-visual"></div>
+        <div class="topic-copy">
+          <div class="eyebrow">Mixed deck</div>
+          <h2>Chaos</h2>
+          <p>A blue whale against a double-decker bus? Only genuinely comparable measurements are used.</p>
+          <div class="topic-meta">
+            <span class="topic-chip">Length</span>
+            <span class="topic-chip">Mass</span>
+            <span class="topic-chip">Speed</span>
+          </div>
+        </div>
+      </button>
+
+    </div>
+
+    <div class="chaos-note">
+      Mock-up note: the normal decks below use small sample data to demonstrate the experience. The repo version can expand each to 50 real cards.
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ==========================================================================
+     01B. GAME SCREEN
+     ========================================================================== -->
+
+<section class="screen hidden" id="gameScreen">
+  <div class="game-shell">
+
+    <header class="game-topbar">
+
+      <div class="game-title">
+        <button class="home-btn" id="homeBtn">← Home</button>
+
+        <div class="game-title-copy">
+          <h1 id="topicTitle">Animals</h1>
+          <p id="topicRule">Higher wins in this deck.</p>
+        </div>
+      </div>
+
+      <div class="score">
+        <div class="pill">Streak <strong id="streak">0</strong></div>
+        <div class="pill">Wins <strong id="wins">0</strong></div>
+        <div class="pill">Losses <strong id="losses">0</strong></div>
+        <div class="pill">Draws <strong id="draws">0</strong></div>
+        <button class="change-topic-btn" id="changeTopicBtn">Change topic</button>
+      </div>
+
+    </header>
+
+    <div class="instruction" id="instruction">
+      <strong>This is your card.</strong> Pick a category.
+    </div>
+
+    <main class="game-board">
+
+      <section class="slot" id="leftSlot">
+        <div class="card-label yours" id="leftLabel">Your card</div>
+        <article class="card current" id="leftCard"></article>
+      </section>
+
+      <section class="result-column">
+        <div class="vs">VS</div>
+        <div class="result" id="resultText">
+          Pick a category
+          <small>Choose from your current card</small>
+        </div>
+      </section>
+
+      <section class="slot empty" id="rightSlot">
+        <div class="card-label" id="rightLabel">Challenger</div>
+        <article class="card" id="rightCard"></article>
+      </section>
+
+    </main>
+
+    <footer class="actions">
+      <button class="action secondary" id="newGameBtn">New starting card</button>
+      <button class="action primary" id="nextBtn" disabled>Draw challenger</button>
+    </footer>
+
+  </div>
+</section>
+
+
+<script>
+/* ============================================================================
+   02A. TOPIC DATA
+   Small samples for the mock-up. The final repo can expand to 50 cards/topic.
+   ============================================================================ */
+
+const topics = {
+  animals: {
+    title: "Animals",
+    rule: "Higher wins in this deck.",
+    className: "animals",
+    stats: [
+      { key: "speed", label: "Top speed", unit: " km/h" },
+      { key: "weight", label: "Weight", unit: " kg" },
+      { key: "length", label: "Length", unit: " m" },
+      { key: "lifespan", label: "Lifespan", unit: " years" },
+      { key: "rarity", label: "Rarity", unit: " /100" }
+    ],
+    cards: [
+      { name: "Cheetah", type: "Animal", fact: "The fastest land animal can reach motorway speeds in short bursts.", speed: 120, weight: 72, length: 1.5, lifespan: 12, rarity: 55 },
+      { name: "Blue Whale", type: "Animal", fact: "The blue whale is the largest animal known to have existed.", speed: 31, weight: 150000, length: 30, lifespan: 90, rarity: 92 },
+      { name: "African Elephant", type: "Animal", fact: "African elephants are the largest living land animals.", speed: 40, weight: 6000, length: 7.5, lifespan: 70, rarity: 74 },
+      { name: "Ostrich", type: "Animal", fact: "Ostriches are the fastest birds on land.", speed: 70, weight: 145, length: 2.8, lifespan: 45, rarity: 40 },
+      { name: "Giant Tortoise", type: "Animal", fact: "Some giant tortoises can live well beyond a century.", speed: 0.3, weight: 250, length: 1.3, lifespan: 150, rarity: 84 },
+      { name: "Peregrine Falcon", type: "Animal", fact: "Its hunting dive makes it one of the fastest animals on Earth.", speed: 389, weight: 1.5, length: 0.5, lifespan: 15, rarity: 65 }
+    ]
+  },
+
+  countries: {
+    title: "Countries",
+    rule: "Higher wins in this deck.",
+    className: "countries",
+    stats: [
+      { key: "area", label: "Area", unit: " km²" },
+      { key: "population", label: "Population", unit: " m" },
+      { key: "highest", label: "Highest point", unit: " m" },
+      { key: "coastline", label: "Coastline", unit: " km" },
+      { key: "life", label: "Life expectancy", unit: " years" }
+    ],
+    cards: [
+      { name: "Canada", type: "Country", fact: "Canada has the world's longest coastline.", area: 9984670, population: 41, highest: 5959, coastline: 202080, life: 82 },
+      { name: "Japan", type: "Country", fact: "Japan is an archipelago of thousands of islands.", area: 377975, population: 124, highest: 3776, coastline: 29751, life: 84 },
+      { name: "France", type: "Country", fact: "Metropolitan France spans from the Atlantic to the Alps and Mediterranean.", area: 551695, population: 68, highest: 4806, coastline: 4853, life: 83 },
+      { name: "Australia", type: "Country", fact: "Australia is both a country and a continent.", area: 7692024, population: 27, highest: 2228, coastline: 25760, life: 83 },
+      { name: "Nepal", type: "Country", fact: "Nepal contains Mount Everest, the world's highest mountain.", area: 147516, population: 30, highest: 8849, coastline: 0, life: 71 }
+    ]
+  },
+
+  space: {
+    title: "Space",
+    rule: "Higher wins in this deck.",
+    className: "space",
+    stats: [
+      { key: "diameter", label: "Diameter", unit: " km" },
+      { key: "mass", label: "Mass", unit: " Earths" },
+      { key: "gravity", label: "Gravity", unit: " m/s²" },
+      { key: "moons", label: "Known moons", unit: "" },
+      { key: "day", label: "Day length", unit: " h" }
+    ],
+    cards: [
+      { name: "Jupiter", type: "Planet", fact: "Jupiter is the largest planet in the Solar System.", diameter: 139820, mass: 317.8, gravity: 24.79, moons: 95, day: 9.9 },
+      { name: "Earth", type: "Planet", fact: "Earth is the only known world with life.", diameter: 12742, mass: 1, gravity: 9.81, moons: 1, day: 24 },
+      { name: "Mars", type: "Planet", fact: "Mars is home to Olympus Mons, the Solar System's largest volcano.", diameter: 6779, mass: 0.107, gravity: 3.71, moons: 2, day: 24.6 },
+      { name: "Saturn", type: "Planet", fact: "Saturn's ring system is the most extensive in the Solar System.", diameter: 116460, mass: 95.2, gravity: 10.44, moons: 146, day: 10.7 },
+      { name: "Mercury", type: "Planet", fact: "Mercury has the shortest year of any planet.", diameter: 4879, mass: 0.055, gravity: 3.7, moons: 0, day: 1407.6 }
+    ]
+  },
+
+  vehicles: {
+    title: "Vehicles",
+    rule: "Higher wins in this deck.",
+    className: "vehicles",
+    stats: [
+      { key: "speed", label: "Top speed", unit: " km/h" },
+      { key: "power", label: "Power", unit: " hp" },
+      { key: "weight", label: "Weight", unit: " kg" },
+      { key: "length", label: "Length", unit: " m" },
+      { key: "range", label: "Range", unit: " km" }
+    ],
+    cards: [
+      { name: "Shinkansen N700S", type: "Train", fact: "The N700S is a modern Japanese high-speed train.", speed: 300, power: 22800, weight: 715000, length: 400, range: 1000 },
+      { name: "Boeing 747-8", type: "Aircraft", fact: "The 747 became one of the most recognisable aircraft ever built.", speed: 1062, power: 264000, weight: 220000, length: 76.3, range: 14320 },
+      { name: "London Routemaster", type: "Bus", fact: "The original Routemaster became an icon of London transport.", speed: 80, power: 115, weight: 7600, length: 8.4, range: 350 },
+      { name: "Bugatti Chiron", type: "Car", fact: "The Chiron was engineered for extreme road-car performance.", speed: 420, power: 1479, weight: 1995, length: 4.54, range: 450 },
+      { name: "TGV Duplex", type: "Train", fact: "Double-deck TGV trains carry large numbers of passengers at high speed.", speed: 320, power: 12200, weight: 380000, length: 200, range: 800 }
+    ]
+  },
+
+  "big-things": {
+    title: "Big Things",
+    rule: "Higher wins in this deck.",
+    className: "big-things",
+    stats: [
+      { key: "height", label: "Height", unit: " m" },
+      { key: "weight", label: "Weight", unit: " t" },
+      { key: "age", label: "Age", unit: " years" },
+      { key: "visitors", label: "Visitors", unit: " m/yr" },
+      { key: "wow", label: "Wow factor", unit: " /100" }
+    ],
+    cards: [
+      { name: "Statue of Liberty", type: "Monument", fact: "The statue was a gift from France to the United States.", height: 93, weight: 204, age: 140, visitors: 4.5, wow: 94 },
+      { name: "Eiffel Tower", type: "Tower", fact: "It was built for the 1889 Exposition Universelle.", height: 330, weight: 10100, age: 137, visitors: 6.3, wow: 97 },
+      { name: "Big Banana", type: "Roadside attraction", fact: "Australia's Big Banana helped popularise the country's tradition of giant roadside objects.", height: 5, weight: 0.5, age: 62, visitors: 0.15, wow: 88 },
+      { name: "Angel of the North", type: "Sculpture", fact: "Its wingspan is wider than a Boeing 767's.", height: 20, weight: 200, age: 28, visitors: 0.2, wow: 92 },
+      { name: "Burj Khalifa", type: "Skyscraper", fact: "The Burj Khalifa is the tallest building in the world.", height: 828, weight: 500000, age: 16, visitors: 2.5, wow: 99 }
+    ]
+  },
+
+  chaos: {
+    title: "Chaos",
+    rule: "Only shared measurements appear. Higher wins.",
+    className: "chaos",
+    stats: [
+      { key: "length", label: "Length", unit: " m" },
+      { key: "weight", label: "Weight", unit: " kg" },
+      { key: "speed", label: "Top speed", unit: " km/h" },
+      { key: "age", label: "Age / lifespan", unit: " years" }
+    ],
+    cards: [
+      { name: "Cheetah", type: "Animal", fact: "A cheetah is shorter than a bus but substantially faster.", length: 1.5, weight: 72, speed: 120, age: 12 },
+      { name: "Double-decker Bus", type: "Vehicle", fact: "A modern double-decker can be over ten metres long.", length: 11.2, weight: 12000, speed: 80, age: 15 },
+      { name: "Blue Whale", type: "Animal", fact: "A blue whale can be roughly three double-decker buses long.", length: 30, weight: 150000, speed: 31, age: 90 },
+      { name: "Statue of Liberty", type: "Monument", fact: "The copper-clad statue itself is much lighter than many people expect.", length: 46, weight: 204000, speed: 0, age: 140 },
+      { name: "Peregrine Falcon", type: "Animal", fact: "Its dive speed can exceed that of many trains.", length: 0.5, weight: 1.5, speed: 389, age: 15 },
+      { name: "Shinkansen", type: "Vehicle", fact: "A 16-car train can be around 400 metres long.", length: 400, weight: 715000, speed: 300, age: 15 }
+    ]
+  }
+};
+
+
+/* ============================================================================
+   02B. STATE
+   ============================================================================ */
+
+let currentTopicKey = "animals";
+let currentTopic = topics.animals;
+
+let currentCard = null;
+let challengerCard = null;
+let selectedStat = null;
+let roundLocked = false;
+let activeSide = "left";
+
+let score = {
+  streak: 0,
+  wins: 0,
+  losses: 0,
+  draws: 0
+};
+
+
+/* ============================================================================
+   02C. SCREEN NAVIGATION
+   ============================================================================ */
+
+function showHome() {
+  document.getElementById("homeScreen").classList.remove("hidden");
+  document.getElementById("gameScreen").classList.add("hidden");
+}
+
+function startTopic(topicKey) {
+  currentTopicKey = topicKey;
+  currentTopic = topics[topicKey];
+
+  document.getElementById("topicTitle").textContent = currentTopic.title;
+  document.getElementById("topicRule").textContent = currentTopic.rule;
+
+  document.getElementById("homeScreen").classList.add("hidden");
+  document.getElementById("gameScreen").classList.remove("hidden");
+
+  score = { streak: 0, wins: 0, losses: 0, draws: 0 };
+  updateScore();
+  newGame();
+}
+
+
+/* ============================================================================
+   02D. HELPERS
+   ============================================================================ */
+
+function randomCard(excludeName = null) {
+  const pool = currentTopic.cards.filter(card => card.name !== excludeName);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function formatNumber(value) {
+  if (Number.isInteger(value)) return value.toLocaleString();
+
+  return value.toLocaleString(undefined, {
+    maximumFractionDigits: 2
+  });
+}
+
+function formatValue(meta, value) {
+  return `${formatNumber(value)}${meta.unit}`;
+}
+
+function sideEls(side) {
+  return {
+    slot: document.getElementById(`${side}Slot`),
+    label: document.getElementById(`${side}Label`),
+    card: document.getElementById(`${side}Card`)
+  };
+}
+
+function otherSide(side) {
+  return side === "left" ? "right" : "left";
+}
+function updateScore() {
+  document.getElementById("streak").textContent = score.streak;
+  document.getElementById("wins").textContent = score.wins;
+  document.getElementById("losses").textContent = score.losses;
+  document.getElementById("draws").textContent = score.draws;
+}
+
+
+/* ============================================================================
+   02E. CARD RENDERING
+   ============================================================================ */
+
+function renderCard(card, target, selectable = false) {
+  target.innerHTML = `
+    <div class="hero ${currentTopic.className}">
+      <div class="hero-copy">
+        <h2>${card.name}</h2>
+        <div class="type">${card.type}</div>
+        <div class="fact">${card.fact}</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      ${currentTopic.stats.map(meta => `
+        <div class="stat ${selectable ? "selectable" : ""} ${selectedStat === meta.key ? "selected" : ""}" data-stat="${meta.key}">
+          ${selectable
+            ? `<button type="button" data-stat-button="${meta.key}">
+                 <span class="stat-name">${meta.label}</span>
+                 <span class="stat-value">${formatValue(meta, card[meta.key])}</span>
+               </button>`
+            : `<span class="stat-name">${meta.label}</span>
+               <span class="stat-value">${formatValue(meta, card[meta.key])}</span>`
+          }
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  if (selectable && !roundLocked) {
+    target.querySelectorAll("[data-stat-button]").forEach(button => {
+      button.addEventListener("click", () => selectStat(button.dataset.statButton));
+    });
+  }
+}
+
+
+/* ============================================================================
+   02F. SELECT CATEGORY
+   ============================================================================ */
+
+function selectStat(statKey) {
+  if (roundLocked) return;
+
+  selectedStat = statKey;
+
+  const active = sideEls(activeSide);
+  renderCard(currentCard, active.card, true);
+
+  document.getElementById("nextBtn").disabled = false;
+
+  const meta = currentTopic.stats.find(d => d.key === statKey);
+
+  document.getElementById("resultText").className = "result";
+  document.getElementById("resultText").innerHTML = `
+    ${meta.label} selected
+    <small>${formatValue(meta, currentCard[statKey])}</small>
+  `;
+
+  document.getElementById("instruction").innerHTML = `
+    <strong>${meta.label}</strong> selected. Draw a challenger.
+  `;
+}
+
+
+/* ============================================================================
+   02G. ROUND
+   ============================================================================ */
+
+function playRound() {
+  if (!selectedStat || roundLocked) return;
+
+  roundLocked = true;
+  document.getElementById("nextBtn").disabled = true;
+
+  const challengerSide = otherSide(activeSide);
+  const challenger = sideEls(challengerSide);
+  const active = sideEls(activeSide);
+
+  challengerCard = randomCard(currentCard.name);
+
+  challenger.slot.classList.remove("empty");
+  challenger.label.textContent = "Challenger";
+  challenger.label.className = "card-label";
+  challenger.card.className = `card ${challengerSide === "left" ? "enter-left" : "enter-right"}`;
+
+  renderCard(challengerCard, challenger.card, false);
+
+  const meta = currentTopic.stats.find(d => d.key === selectedStat);
+  const currentValue = currentCard[selectedStat];
+  const challengerValue = challengerCard[selectedStat];
+
+  const currentRow = active.card.querySelector(`[data-stat="${selectedStat}"]`);
+  const challengerRow = challenger.card.querySelector(`[data-stat="${selectedStat}"]`);
+
+  const resultEl = document.getElementById("resultText");
+  const instructionEl = document.getElementById("instruction");
+
+  setTimeout(() => {
+
+    if (currentValue > challengerValue) {
+      score.wins++;
+      score.streak++;
+
+      currentRow.classList.add("winner");
+      challengerRow.classList.add("loser");
+
+      resultEl.className = "result win";
+      resultEl.innerHTML = `
+        WIN
+        <small>${formatValue(meta, currentValue)} beats ${formatValue(meta, challengerValue)}</small>
+      `;
+
+      instructionEl.innerHTML = `
+        <strong>You win ${challengerCard.name}.</strong> It becomes your next card.
+      `;
+
+      updateScore();
+      setTimeout(() => cascadeWin(challengerSide), 750);
+
+    } else if (currentValue < challengerValue) {
+      score.losses++;
+      score.streak = 0;
+
+      currentRow.classList.add("loser");
+      challengerRow.classList.add("winner");
+
+      resultEl.className = "result loss";
+      resultEl.innerHTML = `
+        LOSS
+        <small>${formatValue(meta, challengerValue)} beats ${formatValue(meta, currentValue)}</small>
+      `;
+
+      instructionEl.innerHTML = `
+        <strong>Your run is over.</strong> Both cards stay visible so you can see what beat you.
+      `;
+
+      updateScore();
+
+    } else {
+      score.draws++;
+
+      currentRow.classList.add("drawer");
+      challengerRow.classList.add("drawer");
+
+      resultEl.className = "result draw";
+      resultEl.innerHTML = `
+        DRAW
+        <small>Both are ${formatValue(meta, currentValue)}</small>
+      `;
+
+      instructionEl.innerHTML = `
+        <strong>Draw.</strong> You keep your current card.
+      `;
+
+      updateScore();
+      setTimeout(() => resetAfterDraw(challengerSide), 750);
+    }
+
+  }, 260);
+}
+
+
+/* ============================================================================
+   02H. CASCADE
+   ============================================================================ */
+
+function cascadeWin(challengerSide) {
+  const oldSide = activeSide;
+  const old = sideEls(oldSide);
+  const winner = sideEls(challengerSide);
+
+  old.card.className = `card ${oldSide === "left" ? "exit-left" : "exit-right"}`;
+
+  setTimeout(() => {
+    old.slot.classList.add("empty");
+    old.card.innerHTML = "";
+
+    activeSide = challengerSide;
+    currentCard = challengerCard;
+    challengerCard = null;
+    selectedStat = null;
+    roundLocked = false;
+
+    winner.label.textContent = "Your card";
+    winner.label.className = "card-label yours";
+    winner.card.className = "card current promote";
+
+    renderCard(currentCard, winner.card, true);
+
+    old.label.textContent = "Challenger";
+    old.label.className = "card-label";
+
+    document.getElementById("resultText").className = "result";
+    document.getElementById("resultText").innerHTML = `
+      Pick again
+      <small>${currentCard.name} is now your card</small>
+    `;
+
+    document.getElementById("instruction").innerHTML = `
+      <strong>${currentCard.name} is now your card.</strong> Choose a category.
+    `;
+
+    document.getElementById("nextBtn").disabled = true;
+  }, 420);
+}
+
+
+/* ============================================================================
+   02I. DRAW RESET
+   ============================================================================ */
+
+function resetAfterDraw(challengerSide) {
+  const challenger = sideEls(challengerSide);
+
+  challenger.card.className = `card ${challengerSide === "left" ? "exit-left" : "exit-right"}`;
+
+  setTimeout(() => {
+    challenger.slot.classList.add("empty");
+    challenger.card.innerHTML = "";
+
+    challengerCard = null;
+    selectedStat = null;
+    roundLocked = false;
+
+    const active = sideEls(activeSide);
+    active.card.className = "card current";
+
+    renderCard(currentCard, active.card, true);
+
+    document.getElementById("resultText").className = "result";
+    document.getElementById("resultText").innerHTML = `
+      Pick again
+      <small>You kept your card</small>
+    `;
+
+    document.getElementById("instruction").innerHTML = `
+      <strong>You kept ${currentCard.name}.</strong> Choose another category.
+    `;
+
+    document.getElementById("nextBtn").disabled = true;
+  }, 420);
+}
+
+
+/* ============================================================================
+   02J. NEW GAME
+   ============================================================================ */
+
+function newGame() {
+  selectedStat = null;
+  challengerCard = null;
+  roundLocked = false;
+  activeSide = "left";
+  score.streak = 0;
+
+  const left = sideEls("left");
+  const right = sideEls("right");
+
+  left.slot.classList.remove("empty");
+  right.slot.classList.add("empty");
+
+  left.card.className = "card current";
+  right.card.className = "card";
+  right.card.innerHTML = "";
+
+  currentCard = randomCard();
+
+  left.label.textContent = "Your card";
+  left.label.className = "card-label yours";
+  right.label.textContent = "Challenger";
+  right.label.className = "card-label";
+
+  renderCard(currentCard, left.card, true);
+
+  document.getElementById("nextBtn").disabled = true;
+
+  document.getElementById("resultText").className = "result";
+  document.getElementById("resultText").innerHTML = `
+    Pick a category
+    <small>Choose from your current card</small>
+  `;
+
+  document.getElementById("instruction").innerHTML = `
+    <strong>This is your card.</strong> Pick one category.
+  `;
+
+  updateScore();
+}
+
+
+/* ============================================================================
+   02K. EVENTS
+   ============================================================================ */
+
+document.querySelectorAll("[data-topic]").forEach(button => {
+  button.addEventListener("click", () => startTopic(button.dataset.topic));
+});
+
+document.getElementById("homeBtn").addEventListener("click", showHome);
+document.getElementById("changeTopicBtn").addEventListener("click", showHome);
+document.getElementById("nextBtn").addEventListener("click", playRound);
+document.getElementById("newGameBtn").addEventListener("click", newGame);
+
+showHome();
+</script>
+
+</body>
+</html>
