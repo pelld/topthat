@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Top Trumps Solo</title>
+<title>Top That</title>
 <style>
 /* ============================================================================
    00A. BASE
@@ -53,8 +53,13 @@ button { font: inherit; }
 
 .home-shell {
   width: min(1180px, 100%);
+  height: 100vh;
   margin: 0 auto;
-  padding: 28px 22px 40px;
+  padding: 20px 22px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 14px;
+  overflow: hidden;
 }
 
 .home-top {
@@ -62,147 +67,243 @@ button { font: inherit; }
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-  margin-bottom: 28px;
+  margin: 0;
 }
 
 .brand h1 {
   margin: 0;
-  font-size: clamp(2.4rem, 7vw, 5.4rem);
-  line-height: .9;
+  font-size: clamp(2.5rem, 5vw, 4.6rem);
+  line-height: .88;
   letter-spacing: -.07em;
 }
 
 .brand p {
-  margin: 14px 0 0;
-  max-width: 700px;
+  margin: 9px 0 0;
+  max-width: 760px;
   color: var(--muted);
-  font-size: 1.03rem;
+  font-size: .96rem;
 }
 
 .topic-grid {
+  min-height: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .topic-card {
   position: relative;
-  min-height: 250px;
+  min-height: 0;
   border: 1px solid var(--line);
-  border-radius: 28px;
+  border-radius: 16px;
   overflow: hidden;
   background: var(--panel);
+  color: var(--ink);
   cursor: pointer;
   padding: 0;
   text-align: left;
-  box-shadow: 0 20px 60px rgba(40,34,22,.08);
-  transition: transform .18s ease, box-shadow .18s ease;
+  box-shadow: none;
+  transition: transform .14s ease, border-color .14s ease, background .14s ease;
 }
 
 .topic-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 28px 70px rgba(40,34,22,.12);
+  transform: translateY(-2px);
+  border-color: #aaa291;
+  background: #faf7ef;
+  box-shadow: none;
 }
 
 .topic-visual {
   position: absolute;
-  inset: 0;
-  opacity: .95;
+  top: 16px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  opacity: .78;
+  background: none !important;
 }
 
-.topic-card.animals .topic-visual {
-  background:
-    radial-gradient(circle at 75% 30%, rgba(255,255,255,.28), transparent 18%),
-    linear-gradient(135deg, #d9d0b9, #9fb3a4);
+.topic-visual::before,
+.topic-visual::after {
+  content: "";
+  position: absolute;
 }
 
-.topic-card.countries .topic-visual {
-  background:
-    linear-gradient(30deg, transparent 48%, rgba(255,255,255,.12) 49%, transparent 50%),
-    linear-gradient(135deg, #cad5d1, #b7c4a2);
+.topic-card.animals .topic-visual::before {
+  inset: 10px 5px 8px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
 }
 
-.topic-card.space .topic-visual {
-  background:
-    radial-gradient(circle at 72% 25%, #f7f3dd 0 2%, transparent 2.2%),
-    radial-gradient(circle at 84% 54%, #f7f3dd 0 1%, transparent 1.2%),
-    linear-gradient(135deg, #1e2230, #4b536b);
+.topic-card.animals .topic-visual::after {
+  width: 10px;
+  height: 10px;
+  left: 2px;
+  top: 2px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  box-shadow: 16px -3px 0 -3px var(--panel), 16px -3px 0 0 currentColor, 31px 3px 0 -3px var(--panel), 31px 3px 0 0 currentColor;
 }
 
-.topic-card.vehicles .topic-visual {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.08), transparent 50%),
-    linear-gradient(135deg, #b6b2a9, #7c8a92);
+.topic-card.countries .topic-visual::before {
+  inset: 3px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
 }
 
-.topic-card.big-things .topic-visual {
-  background:
-    repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, transparent 1px 18px),
-    linear-gradient(135deg, #d9c6b3, #b89d82);
+.topic-card.countries .topic-visual::after {
+  left: 7px;
+  right: 7px;
+  top: 23px;
+  height: 3px;
+  background: currentColor;
+  box-shadow: 0 -10px 0 -1px currentColor, 0 10px 0 -1px currentColor;
 }
 
-.topic-card.chaos .topic-visual {
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,.28), transparent 18%),
-    radial-gradient(circle at 80% 80%, rgba(255,255,255,.18), transparent 16%),
-    linear-gradient(135deg, #c8b4d6, #86a7a5);
+.topic-card.space .topic-visual::before {
+  width: 22px;
+  height: 22px;
+  left: 13px;
+  top: 13px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+}
+
+.topic-card.space .topic-visual::after {
+  width: 46px;
+  height: 18px;
+  left: 1px;
+  top: 15px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  transform: rotate(-20deg);
+}
+
+.topic-card.vehicles .topic-visual::before {
+  width: 40px;
+  height: 18px;
+  left: 4px;
+  top: 16px;
+  border: 3px solid currentColor;
+  border-radius: 8px 10px 5px 5px;
+}
+
+.topic-card.vehicles .topic-visual::after {
+  width: 9px;
+  height: 9px;
+  left: 9px;
+  top: 34px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  box-shadow: 24px 0 0 -3px var(--panel), 24px 0 0 0 currentColor;
+}
+
+.topic-card.big-things .topic-visual::before {
+  left: 18px;
+  bottom: 4px;
+  width: 13px;
+  height: 40px;
+  border: 3px solid currentColor;
+  border-bottom-width: 5px;
+}
+
+.topic-card.big-things .topic-visual::after {
+  left: 7px;
+  bottom: 4px;
+  width: 35px;
+  height: 3px;
+  background: currentColor;
+}
+
+.topic-card.chaos .topic-visual::before {
+  width: 36px;
+  height: 36px;
+  left: 6px;
+  top: 6px;
+  border: 3px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.topic-card.chaos .topic-visual::after {
+  left: 23px;
+  top: 0;
+  width: 3px;
+  height: 48px;
+  background: currentColor;
+  transform: rotate(45deg);
 }
 
 .topic-copy {
   position: relative;
   z-index: 1;
-  min-height: 250px;
-  padding: 24px;
+  min-height: 100%;
+  padding: 18px 76px 16px 18px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background: linear-gradient(180deg, transparent 28%, rgba(0,0,0,.58));
-  color: white;
+  background: none;
+  color: var(--ink);
 }
 
 .topic-copy .eyebrow {
   text-transform: uppercase;
-  letter-spacing: .14em;
-  font-size: .72rem;
+  letter-spacing: .13em;
+  font-size: .68rem;
   font-weight: 900;
-  opacity: .8;
+  color: var(--muted);
+  opacity: 1;
 }
 
 .topic-copy h2 {
-  margin: 6px 0 7px;
-  font-size: clamp(2rem, 4vw, 3.4rem);
+  margin: 4px 0 5px;
+  font-size: clamp(1.7rem, 3vw, 2.7rem);
   line-height: .95;
-  letter-spacing: -.055em;
+  letter-spacing: -.05em;
 }
 
 .topic-copy p {
   margin: 0;
-  max-width: 560px;
-  opacity: .9;
+  max-width: 520px;
+  color: var(--muted);
+  font-size: .88rem;
+  line-height: 1.3;
+  opacity: 1;
 }
 
 .topic-meta {
-  margin-top: 14px;
+  margin-top: 10px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .topic-chip {
-  border: 1px solid rgba(255,255,255,.35);
-  background: rgba(255,255,255,.10);
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
   border-radius: 999px;
-  padding: 6px 9px;
-  font-size: .8rem;
+  padding: 4px 7px;
+  font-size: .72rem;
   font-weight: 800;
 }
 
 .chaos-note {
-  margin-top: 18px;
+  margin: 0;
   color: var(--muted);
-  font-size: .92rem;
+  font-size: .8rem;
 }
 
+@media (max-height: 760px) and (min-width: 761px) {
+  .home-shell { padding-top: 14px; padding-bottom: 14px; gap: 10px; }
+  .brand h1 { font-size: 3.2rem; }
+  .brand p { margin-top: 6px; font-size: .9rem; }
+  .topic-grid { gap: 9px; }
+  .topic-copy { padding: 14px 70px 12px 14px; }
+  .topic-copy h2 { font-size: 1.8rem; }
+  .topic-copy p { font-size: .8rem; }
+  .topic-meta { margin-top: 7px; }
+}
 
 /* ============================================================================
    00C. GAME HEADER
@@ -625,7 +726,7 @@ button { font: inherit; }
 
     <div class="home-top">
       <div class="brand">
-        <h1>Beat the Card</h1>
+        <h1>Top That</h1>
         <p>Pick a topic, choose the strongest stat on your card, and keep the run alive. Win a challenger and it becomes the card you have to play next.</p>
       </div>
     </div>
@@ -719,7 +820,7 @@ button { font: inherit; }
     </div>
 
     <div class="chaos-note">
-      Mock-up note: the normal decks below use small sample data to demonstrate the experience. The repo version can expand each to 50 real cards.
+      Prototype decks use sample data for now; each topic can expand to 50 real cards.
     </div>
 
   </div>
