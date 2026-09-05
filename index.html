@@ -109,27 +109,27 @@ button { font: inherit; }
 .topic-visual::after { display:none; }
 
 .topic-card.animals .topic-visual {
-  background-image:url("https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/TheCheethcat.jpg/800px-TheCheethcat.jpg");
+  background-image:url("https://commons.wikimedia.org/wiki/Special:FilePath/Cheetah%20Kruger.jpg?width=900");
   background-position:center 42%;
 }
 .topic-card.countries .topic-visual {
-  background-image:url("https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57752/land_ocean_ice_2048.jpg");
+  background-image:url("https://commons.wikimedia.org/wiki/Special:FilePath/The%20Blue%20Marble%2C%20AS17-148-22727.jpg?width=900");
   background-position:center 45%;
 }
 .topic-card.space .topic-visual {
-  background-image:url("https://science.nasa.gov/wp-content/uploads/2023/05/hubble-saturn-jpg.webp");
+  background-image:url("https://commons.wikimedia.org/wiki/Special:FilePath/Saturn%20-%20High%20Resolution%2C%202004.jpg?width=900");
   background-position:center;
 }
 .topic-card.vehicles .topic-visual {
-  background-image:url("https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Routemaster_RM1562.jpg/800px-Routemaster_RM1562.jpg");
+  background-image:url("https://commons.wikimedia.org/wiki/Special:FilePath/Routemaster%20RM1562.jpg?width=900");
   background-position:center 52%;
 }
 .topic-card.big-things .topic-visual {
-  background-image:url("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Tour_Eiffel_Wikimedia_Commons.jpg/800px-Tour_Eiffel_Wikimedia_Commons.jpg");
+  background-image:url("https://commons.wikimedia.org/wiki/Special:FilePath/La%20tour%20Eiffel2013.jpg?width=900");
   background-position:center 42%;
 }
 .topic-card.chaos .topic-visual {
-  background-image:url("https://www.montereybayaquarium.org/globalassets/mba/images/animals/marine-mammals/blue-whale-011369_cmikejohnson.jpg");
+  background-image:url("https://commons.wikimedia.org/wiki/Special:FilePath/Blue%20Whale%20001%20noaa%20body%20color.jpg?width=900");
   background-position:center 45%;
 }
 
@@ -913,6 +913,7 @@ let currentTopic = topics.animals;
 
 let currentCard = null;
 let challengerCard = null;
+let drawPile = [];
 let selectedStat = null;
 let selectedDirection = null;
 let roundLocked = false;
@@ -955,9 +956,37 @@ function startTopic(topicKey) {
    02D. HELPERS
    ============================================================================ */
 
+function shuffleCards(cards) {
+  const shuffled = [...cards];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled;
+}
+
+function refillDrawPile(excludeName = null) {
+  drawPile = shuffleCards(
+    currentTopic.cards.filter(card => card.name !== excludeName)
+  );
+}
+
 function randomCard(excludeName = null) {
-  const pool = currentTopic.cards.filter(card => card.name !== excludeName);
-  return pool[Math.floor(Math.random() * pool.length)];
+  if (drawPile.length === 0) {
+    refillDrawPile(excludeName);
+  }
+
+  let next = drawPile.shift();
+
+  // Safety check for a card that has just become the current card.
+  if (next && next.name === excludeName) {
+    drawPile.push(next);
+    next = drawPile.shift();
+  }
+
+  return next;
 }
 
 function formatNumber(value) {
@@ -1288,6 +1317,7 @@ function resetAfterDraw(challengerSide) {
    ============================================================================ */
 
 function newGame() {
+  drawPile = shuffleCards(currentTopic.cards);
   selectedStat = null;
   selectedDirection = null;
   challengerCard = null;
@@ -1305,7 +1335,7 @@ function newGame() {
   right.card.className = "card";
   right.card.innerHTML = "";
 
-  currentCard = randomCard();
+  currentCard = drawPile.shift();
 
   left.label.textContent = "Your card";
   left.label.className = "card-label yours";
