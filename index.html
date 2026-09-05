@@ -555,9 +555,75 @@ button { font: inherit; }
    00F. MOBILE
    ============================================================================ */
 
-.mobile-result-overlay,
 .mobile-choice-overlay {
   display: none;
+}
+
+.mobile-result-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(20,18,14,.22);
+}
+
+.mobile-result-overlay.hidden {
+  display: none !important;
+}
+
+.mobile-result-box {
+  width: min(390px, 92vw);
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  background: #fffdf8;
+  box-shadow: 6px 6px 0 var(--ink);
+  padding: 22px;
+  text-align: center;
+}
+
+.mobile-result-kicker {
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--muted);
+  font-size: .66rem;
+  font-weight: 900;
+}
+
+.mobile-result-title {
+  margin-top: 3px;
+  font-size: 2.35rem;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.mobile-result-detail {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.35;
+}
+
+.mobile-result-box.win .mobile-result-title { color: var(--win); }
+.mobile-result-box.loss .mobile-result-title { color: var(--loss); }
+.mobile-result-box.draw .mobile-result-title { color: var(--draw); }
+
+.mobile-result-action {
+  position: relative;
+  z-index: 10000;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: white;
+  padding: 11px 14px;
+  cursor: pointer;
+  font-weight: 900;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @media (max-width: 760px) {
@@ -791,8 +857,7 @@ button { font: inherit; }
     font-size: .74rem;
   }
 
-  .mobile-choice-overlay,
-  .mobile-result-overlay {
+  .mobile-choice-overlay {
     position: fixed;
     inset: 0;
     z-index: 9999;
@@ -1348,7 +1413,6 @@ function updateScore() {
 }
 
 function showMobileResult(type, title, detail, actionLabel, action) {
-  if (!window.matchMedia("(max-width: 760px)").matches) return false;
 
   const overlay = document.getElementById("mobileResultOverlay");
   const box = document.getElementById("mobileResultBox");
@@ -1563,9 +1627,7 @@ function playRound() {
         () => cascadeWin(challengerSide)
       );
 
-      if (!mobileWin) {
-        setTimeout(() => cascadeWin(challengerSide), 900);
-      }
+
 
     } else if (playerLoses) {
       score.losses++;
@@ -1618,9 +1680,7 @@ function playRound() {
         () => resetAfterDraw(challengerSide)
       );
 
-      if (!mobileDraw) {
-        setTimeout(() => resetAfterDraw(challengerSide), 900);
-      }
+
     }
 
   }, 260);
