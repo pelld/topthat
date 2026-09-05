@@ -1681,7 +1681,7 @@ function renderCard(card, target, selectable = false) {
   target.innerHTML = `
     <div class="hero ${currentTopic.className}">
       <div class="hero-copy">
-        <h2>${card.name}</h2>
+        <h2 class="${card.name.length > 28 ? "very-long-title" : card.name.length > 18 ? "long-title" : ""}">${card.name}</h2>
         <div class="type">${card.type}</div>
         <div class="fact">${card.fact}</div>
       </div>
