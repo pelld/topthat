@@ -865,7 +865,8 @@ button { font: inherit; }
     place-items: center;
     padding: 18px;
     background: rgba(20,18,14,.22);
-    pointer-events: none;
+    pointer-events: auto;
+    touch-action: manipulation;
   }
 
   .mobile-choice-overlay.hidden,
@@ -898,6 +899,8 @@ button { font: inherit; }
   }
 
   .mobile-choice-btn {
+    position: relative;
+    z-index: 10000;
     border: 2px solid var(--ink);
     border-radius: 12px;
     background: #fffdf8;
@@ -906,6 +909,9 @@ button { font: inherit; }
     cursor: pointer;
     font-weight: 950;
     font-size: 1rem;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
 
   .mobile-choice-btn:active {
