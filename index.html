@@ -795,7 +795,7 @@ button { font: inherit; }
   .mobile-result-overlay {
     position: fixed;
     inset: 0;
-    z-index: 50;
+    z-index: 9999;
     display: grid;
     place-items: center;
     padding: 18px;
@@ -884,7 +884,12 @@ button { font: inherit; }
   .mobile-result-box.draw .mobile-result-title { color: var(--draw); }
 
   .mobile-result-action {
+    position: relative;
+    z-index: 10000;
     width: 100%;
+    min-height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     margin-top: 14px;
     border: 0;
     border-radius: 999px;
@@ -1342,8 +1347,6 @@ function updateScore() {
   document.getElementById("draws").textContent = score.draws;
 }
 
-let mobileResultAction = null;
-
 function showMobileResult(type, title, detail, actionLabel, action) {
   if (!window.matchMedia("(max-width: 760px)").matches) return false;
 
@@ -1356,9 +1359,15 @@ function showMobileResult(type, title, detail, actionLabel, action) {
   document.getElementById("mobileResultDetail").textContent = detail;
   actionButton.textContent = actionLabel;
 
-  mobileResultAction = action;
-  overlay.classList.remove("hidden");
+  actionButton.onclick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    overlay.classList.add("hidden");
+    actionButton.onclick = null;
+    action();
+  };
 
+  overlay.classList.remove("hidden");
   return true;
 }
 
@@ -1367,16 +1376,6 @@ document.querySelectorAll("[data-mobile-direction]").forEach(button => {
     document.getElementById("mobileChoiceOverlay").classList.add("hidden");
     selectDirection(button.dataset.mobileDirection);
   });
-});
-
-document.getElementById("mobileResultAction").addEventListener("click", () => {
-  const overlay = document.getElementById("mobileResultOverlay");
-  const action = mobileResultAction;
-
-  overlay.classList.add("hidden");
-  mobileResultAction = null;
-
-  if (action) action();
 });
 
 
