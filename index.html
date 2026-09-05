@@ -610,6 +610,38 @@ button { font: inherit; }
 .result.loss { color: var(--loss); }
 .result.draw { color: var(--draw); }
 
+.direction-picker {
+  width: 100%;
+  display: grid;
+  gap: 7px;
+}
+
+.direction-btn {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255,255,255,.76);
+  color: var(--ink);
+  padding: 9px 8px;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.direction-btn:hover,
+.direction-btn:focus-visible {
+  border-color: var(--ink);
+  background: white;
+}
+
+.direction-btn small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: .68rem;
+  font-weight: 750;
+}
+
 .actions {
   display: flex;
   justify-content: center;
@@ -715,7 +747,7 @@ button { font: inherit; }
     <div class="home-top">
       <div class="brand">
         <h1>Top That</h1>
-        <p>Pick a topic, choose the strongest stat on your card, and keep the run alive. Win a challenger and it becomes the card you have to play next.</p>
+        <p>Pick a topic, choose a stat, then decide whether the highest or lowest value wins. Win a challenger and it becomes the card you play next.</p>
       </div>
     </div>
 
@@ -882,7 +914,7 @@ button { font: inherit; }
 const topics = {
   animals: {
     title: "Animals",
-    rule: "Higher wins in this deck.",
+    rule: "Choose the stat and whether high or low wins.",
     className: "animals",
     stats: [
       { key: "speed", label: "Top speed", unit: " km/h" },
@@ -903,7 +935,7 @@ const topics = {
 
   countries: {
     title: "Countries",
-    rule: "Higher wins in this deck.",
+    rule: "Choose the stat and whether high or low wins.",
     className: "countries",
     stats: [
       { key: "area", label: "Area", unit: " km²" },
@@ -923,7 +955,7 @@ const topics = {
 
   space: {
     title: "Space",
-    rule: "Higher wins in this deck.",
+    rule: "Choose the stat and whether high or low wins.",
     className: "space",
     stats: [
       { key: "diameter", label: "Diameter", unit: " km" },
@@ -943,7 +975,7 @@ const topics = {
 
   vehicles: {
     title: "Vehicles",
-    rule: "Higher wins in this deck.",
+    rule: "Choose the stat and whether high or low wins.",
     className: "vehicles",
     stats: [
       { key: "speed", label: "Top speed", unit: " km/h" },
@@ -963,7 +995,7 @@ const topics = {
 
   "big-things": {
     title: "Big Things",
-    rule: "Higher wins in this deck.",
+    rule: "Choose the stat and whether high or low wins.",
     className: "big-things",
     stats: [
       { key: "height", label: "Height", unit: " m" },
@@ -983,7 +1015,7 @@ const topics = {
 
   chaos: {
     title: "Chaos",
-    rule: "Only shared measurements appear. Higher wins.",
+    rule: "Only shared measurements appear. Choose high or low.",
     className: "chaos",
     stats: [
       { key: "length", label: "Length", unit: " m" },
@@ -1013,6 +1045,7 @@ let currentTopic = topics.animals;
 let currentCard = null;
 let challengerCard = null;
 let selectedStat = null;
+let selectedDirection = null;
 let roundLocked = false;
 let activeSide = "left";
 
@@ -1135,23 +1168,57 @@ function selectStat(statKey) {
   if (roundLocked) return;
 
   selectedStat = statKey;
+  selectedDirection = null;
 
   const active = sideEls(activeSide);
   renderCard(currentCard, active.card, true);
 
-  document.getElementById("nextBtn").disabled = false;
+  document.getElementById("nextBtn").disabled = true;
 
   const meta = currentTopic.stats.find(d => d.key === statKey);
 
   document.getElementById("resultText").className = "result";
   document.getElementById("resultText").innerHTML = `
-    ${meta.label} selected
-    <small>${formatValue(meta, currentCard[statKey])}</small>
+    <div class="direction-picker">
+      <button class="direction-btn" type="button" data-direction="high">
+        ↑ Highest wins
+        <small>${formatValue(meta, currentCard[statKey])}</small>
+      </button>
+      <button class="direction-btn" type="button" data-direction="low">
+        ↓ Lowest wins
+        <small>${formatValue(meta, currentCard[statKey])}</small>
+      </button>
+    </div>
   `;
 
   document.getElementById("instruction").innerHTML = `
-    <strong>${meta.label}</strong> selected. Draw a challenger.
+    <strong>${meta.label}</strong> selected. Now choose whether the <strong>highest</strong> or <strong>lowest</strong> value wins.
   `;
+
+  document.querySelectorAll("[data-direction]").forEach(button => {
+    button.addEventListener("click", () => selectDirection(button.dataset.direction));
+  });
+}
+
+function selectDirection(direction) {
+  if (!selectedStat || roundLocked) return;
+
+  selectedDirection = direction;
+
+  const meta = currentTopic.stats.find(d => d.key === selectedStat);
+  const label = direction === "high" ? "Highest wins ↑" : "Lowest wins ↓";
+
+  document.getElementById("resultText").className = "result";
+  document.getElementById("resultText").innerHTML = `
+    ${label}
+    <small>${meta.label}: ${formatValue(meta, currentCard[selectedStat])}</small>
+  `;
+
+  document.getElementById("instruction").innerHTML = `
+    <strong>${meta.label}</strong> — <strong>${direction === "high" ? "highest" : "lowest"} wins</strong>. Draw a challenger.
+  `;
+
+  document.getElementById("nextBtn").disabled = false;
 }
 
 
@@ -1160,7 +1227,7 @@ function selectStat(statKey) {
    ============================================================================ */
 
 function playRound() {
-  if (!selectedStat || roundLocked) return;
+  if (!selectedStat || !selectedDirection || roundLocked) return;
 
   roundLocked = true;
   document.getElementById("nextBtn").disabled = true;
@@ -1188,9 +1255,19 @@ function playRound() {
   const resultEl = document.getElementById("resultText");
   const instructionEl = document.getElementById("instruction");
 
+  const playerWins = selectedDirection === "high"
+    ? currentValue > challengerValue
+    : currentValue < challengerValue;
+
+  const playerLoses = selectedDirection === "high"
+    ? currentValue < challengerValue
+    : currentValue > challengerValue;
+
+  const directionLabel = selectedDirection === "high" ? "higher" : "lower";
+
   setTimeout(() => {
 
-    if (currentValue > challengerValue) {
+    if (playerWins) {
       score.wins++;
       score.streak++;
 
@@ -1200,7 +1277,7 @@ function playRound() {
       resultEl.className = "result win";
       resultEl.innerHTML = `
         WIN
-        <small>${formatValue(meta, currentValue)} beats ${formatValue(meta, challengerValue)}</small>
+        <small>${formatValue(meta, currentValue)} wins — ${directionLabel} beats ${formatValue(meta, challengerValue)}</small>
       `;
 
       instructionEl.innerHTML = `
@@ -1210,7 +1287,7 @@ function playRound() {
       updateScore();
       setTimeout(() => cascadeWin(challengerSide), 750);
 
-    } else if (currentValue < challengerValue) {
+    } else if (playerLoses) {
       score.losses++;
       score.streak = 0;
 
@@ -1220,7 +1297,7 @@ function playRound() {
       resultEl.className = "result loss";
       resultEl.innerHTML = `
         LOSS
-        <small>${formatValue(meta, challengerValue)} beats ${formatValue(meta, currentValue)}</small>
+        <small>${formatValue(meta, challengerValue)} wins — ${directionLabel} beats ${formatValue(meta, currentValue)}</small>
       `;
 
       instructionEl.innerHTML = `
@@ -1272,6 +1349,7 @@ function cascadeWin(challengerSide) {
     currentCard = challengerCard;
     challengerCard = null;
     selectedStat = null;
+    selectedDirection = null;
     roundLocked = false;
 
     winner.label.textContent = "Your card";
@@ -1313,6 +1391,7 @@ function resetAfterDraw(challengerSide) {
 
     challengerCard = null;
     selectedStat = null;
+    selectedDirection = null;
     roundLocked = false;
 
     const active = sideEls(activeSide);
@@ -1341,6 +1420,7 @@ function resetAfterDraw(challengerSide) {
 
 function newGame() {
   selectedStat = null;
+  selectedDirection = null;
   challengerCard = null;
   roundLocked = false;
   activeSide = "left";
@@ -1374,7 +1454,7 @@ function newGame() {
   `;
 
   document.getElementById("instruction").innerHTML = `
-    <strong>This is your card.</strong> Pick one category.
+    <strong>This is your card.</strong> Pick a category, then choose high or low.
   `;
 
   updateScore();
