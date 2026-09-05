@@ -62,23 +62,9 @@ button { font: inherit; }
   overflow: hidden;
 }
 
-.home-top {
-  margin: 0;
-}
-
-.brand h1 {
-  margin: 0;
-  font-size: clamp(2.6rem, 5vw, 4.8rem);
-  line-height: .88;
-  letter-spacing: -.07em;
-}
-
-.brand p {
-  margin: 8px 0 0;
-  max-width: 760px;
-  color: var(--muted);
-  font-size: .96rem;
-}
+.home-top { margin: 0; }
+.brand h1 { margin: 0; font-size: clamp(2.6rem, 5vw, 4.8rem); line-height: .88; letter-spacing: -.07em; }
+.brand p { margin: 8px 0 0; max-width: 760px; color: var(--muted); font-size: .96rem; }
 
 .topic-grid {
   min-height: 0;
@@ -91,206 +77,133 @@ button { font: inherit; }
 .topic-card {
   position: relative;
   min-height: 0;
-  border: 1px solid var(--line);
-  border-radius: 22px;
+  padding: 0;
   overflow: hidden;
   cursor: pointer;
-  padding: 0;
   text-align: left;
-  color: white;
-  background: #222;
-  box-shadow: 0 12px 28px rgba(38,33,24,.10);
-  transition: transform .16s ease, box-shadow .16s ease;
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  background: #fffdf8;
+  color: var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform .12s ease, box-shadow .12s ease;
 }
 
 .topic-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 18px 34px rgba(38,33,24,.16);
+  transform: translate(-2px,-2px);
+  box-shadow: 7px 7px 0 var(--ink);
 }
 
+/* Flat, literal illustrations: recognisable objects, no atmospheric shading. */
 .topic-visual {
   position: absolute;
-  inset: 0;
+  inset: 0 0 40% 0;
+  background: #efe8d8;
+  border-bottom: 2px solid var(--ink);
   overflow: hidden;
 }
 
-/* Each card uses a bold graphic motif instead of a generic gradient. */
-.topic-card.animals .topic-visual {
-  background:
-    radial-gradient(circle at 72% 35%, rgba(255,255,255,.18) 0 7%, transparent 7.5%),
-    radial-gradient(circle at 82% 24%, rgba(255,255,255,.16) 0 4%, transparent 4.5%),
-    linear-gradient(135deg, #335b43 0%, #6f8a67 48%, #2a3f32 100%);
-}
+.topic-visual::before,
+.topic-visual::after { content:""; position:absolute; }
 
+/* ANIMALS — a side-on elephant: body, head, trunk and legs. */
+.topic-card.animals .topic-visual { background:#dbe6cf; }
+.topic-card.animals .topic-visual::before {
+  width: 145px; height: 78px; right: 48px; top: 34px;
+  background:#65765b; border:3px solid var(--ink); border-radius:48% 52% 40% 38%;
+  box-shadow: -5px 67px 0 -29px #65765b, 64px 67px 0 -29px #65765b;
+}
 .topic-card.animals .topic-visual::after {
-  content: "";
-  position: absolute;
-  width: 210px;
-  height: 210px;
-  right: -22px;
-  top: -30px;
-  border: 28px solid rgba(255,255,255,.12);
-  border-radius: 52% 48% 46% 54%;
-  transform: rotate(18deg);
+  width:52px; height:52px; right:24px; top:48px;
+  background:#65765b; border:3px solid var(--ink); border-radius:50%;
+  box-shadow: 25px 32px 0 -19px var(--ink), 31px 54px 0 -22px var(--ink);
 }
 
-.topic-card.countries .topic-visual {
-  background:
-    linear-gradient(24deg, transparent 0 44%, rgba(255,255,255,.15) 44% 46%, transparent 46% 100%),
-    linear-gradient(156deg, transparent 0 54%, rgba(255,255,255,.11) 54% 56%, transparent 56% 100%),
-    linear-gradient(135deg, #335c70, #4f7f86 48%, #203e4c);
+/* COUNTRIES — a simple globe with latitude/longitude lines. */
+.topic-card.countries .topic-visual { background:#d8e6e5; }
+.topic-card.countries .topic-visual::before {
+  width:112px; height:112px; right:45px; top:22px;
+  border:3px solid var(--ink); border-radius:50%; background:#f8f3e7;
 }
-
 .topic-card.countries .topic-visual::after {
-  content: "";
-  position: absolute;
-  width: 170px;
-  height: 170px;
-  right: -18px;
-  top: -20px;
-  border: 2px solid rgba(255,255,255,.28);
-  border-radius: 50%;
-  box-shadow:
-    inset 38px 0 0 -36px rgba(255,255,255,.2),
-    inset -38px 0 0 -36px rgba(255,255,255,.2);
+  width:88px; height:3px; right:57px; top:76px; background:var(--ink);
+  box-shadow:0 -26px 0 -1px var(--ink),0 26px 0 -1px var(--ink);
 }
 
-.topic-card.space .topic-visual {
-  background:
-    radial-gradient(circle at 78% 25%, #f6f0d4 0 7%, rgba(246,240,212,.18) 7.5%, transparent 8%),
-    radial-gradient(circle at 88% 58%, rgba(255,255,255,.85) 0 1.1%, transparent 1.4%),
-    radial-gradient(circle at 66% 70%, rgba(255,255,255,.7) 0 .8%, transparent 1.1%),
-    radial-gradient(circle at 55% 22%, rgba(255,255,255,.65) 0 .6%, transparent .9%),
-    linear-gradient(135deg, #151928, #29304a 55%, #101421);
+/* SPACE — Saturn, drawn as a planet rather than abstract circles. */
+.topic-card.space .topic-visual { background:#dfe4f1; }
+.topic-card.space .topic-visual::before {
+  width:76px; height:76px; right:60px; top:38px;
+  background:#e3b95f; border:3px solid var(--ink); border-radius:50%;
 }
-
 .topic-card.space .topic-visual::after {
-  content: "";
-  position: absolute;
-  width: 170px;
-  height: 62px;
-  right: -16px;
-  top: 26px;
-  border: 3px solid rgba(255,255,255,.28);
-  border-radius: 50%;
-  transform: rotate(-20deg);
+  width:142px; height:42px; right:26px; top:52px;
+  border:4px solid var(--ink); border-radius:50%; transform:rotate(-13deg);
 }
 
-.topic-card.vehicles .topic-visual {
-  background:
-    linear-gradient(180deg, transparent 0 62%, rgba(255,255,255,.12) 62% 64%, transparent 64%),
-    linear-gradient(135deg, #4f5256, #747b7f 50%, #35383a);
+/* VEHICLES — a literal double-decker bus. */
+.topic-card.vehicles .topic-visual { background:#e7ded1; }
+.topic-card.vehicles .topic-visual::before {
+  width:154px; height:82px; right:34px; top:31px;
+  background:#b64b3d; border:3px solid var(--ink); border-radius:8px 12px 5px 5px;
 }
-
 .topic-card.vehicles .topic-visual::after {
-  content: "";
-  position: absolute;
-  width: 190px;
-  height: 74px;
-  right: -18px;
-  top: 22px;
-  border: 4px solid rgba(255,255,255,.22);
-  border-radius: 32px 48px 18px 18px;
-  box-shadow:
-    -28px 55px 0 -22px rgba(255,255,255,.22),
-    70px 55px 0 -22px rgba(255,255,255,.22);
+  width:24px; height:24px; right:58px; top:99px;
+  background:#fffdf8; border:3px solid var(--ink); border-radius:50%;
+  box-shadow:-79px 0 0 -3px #fffdf8,-79px 0 0 0 var(--ink);
 }
 
-.topic-card.big-things .topic-visual {
-  background:
-    repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 1px, transparent 1px 20px),
-    linear-gradient(135deg, #875d3e, #b78d67 52%, #6a4934);
+/* BIG THINGS — a simplified Eiffel Tower silhouette. */
+.topic-card.big-things .topic-visual { background:#eadfc9; }
+.topic-card.big-things .topic-visual::before {
+  width:100px; height:116px; right:54px; top:16px;
+  background:var(--ink);
+  clip-path:polygon(46% 0,54% 0,60% 38%,88% 100%,70% 100%,57% 66%,43% 66%,30% 100%,12% 100%,40% 38%);
 }
-
 .topic-card.big-things .topic-visual::after {
-  content: "";
-  position: absolute;
-  right: 28px;
-  top: 18px;
-  width: 58px;
-  height: 175px;
-  border: 5px solid rgba(255,255,255,.25);
-  border-bottom-width: 12px;
-  transform: perspective(160px) rotateX(4deg);
+  width:118px; height:3px; right:45px; top:129px; background:var(--ink);
 }
 
-.topic-card.chaos .topic-visual {
-  background:
-    linear-gradient(135deg, rgba(255,255,255,.13) 0 18%, transparent 18% 36%, rgba(255,255,255,.10) 36% 52%, transparent 52% 100%),
-    linear-gradient(135deg, #7b4d83, #4d7f85 52%, #324d59);
+/* CHAOS — three recognisable mini-objects deliberately colliding. */
+.topic-card.chaos .topic-visual { background:#eadcf0; }
+.topic-card.chaos .topic-visual::before {
+  width:82px; height:42px; right:96px; top:31px;
+  background:#5f748a; border:3px solid var(--ink); border-radius:50% 55% 45% 50%;
+  transform:rotate(-8deg);
 }
-
 .topic-card.chaos .topic-visual::after {
-  content: "";
-  position: absolute;
-  width: 150px;
-  height: 150px;
-  right: -14px;
-  top: -20px;
-  border: 20px solid rgba(255,255,255,.16);
-  transform: rotate(45deg);
+  width:76px; height:42px; right:31px; top:83px;
+  background:#b64b3d; border:3px solid var(--ink); border-radius:7px;
+  box-shadow:-50px 29px 0 -17px #fffdf8,-50px 29px 0 -14px var(--ink);
 }
 
 .topic-copy {
-  position: relative;
-  z-index: 1;
-  min-height: 100%;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  background: linear-gradient(180deg, rgba(0,0,0,.02) 18%, rgba(0,0,0,.08) 44%, rgba(0,0,0,.72) 100%);
+  position:absolute;
+  inset:60% 0 0;
+  z-index:2;
+  padding:14px 16px 13px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  background:#fffdf8;
+  color:var(--ink);
 }
 
-.topic-copy .eyebrow {
-  text-transform: uppercase;
-  letter-spacing: .13em;
-  font-size: .68rem;
-  font-weight: 900;
-  color: rgba(255,255,255,.78);
-}
+.topic-copy .eyebrow { text-transform:uppercase; letter-spacing:.13em; font-size:.66rem; font-weight:900; color:var(--muted); }
+.topic-copy h2 { margin:3px 0 4px; font-size:clamp(1.65rem,2.7vw,2.5rem); line-height:.94; letter-spacing:-.05em; }
+.topic-copy p { margin:0; color:var(--muted); font-size:.82rem; line-height:1.25; }
+.topic-meta { margin-top:8px; display:flex; gap:5px; flex-wrap:wrap; }
+.topic-chip { border:1px solid var(--line); background:#f5f0e6; color:var(--ink); border-radius:999px; padding:3px 7px; font-size:.68rem; font-weight:850; }
 
-.topic-copy h2 {
-  margin: 4px 0 5px;
-  font-size: clamp(1.8rem, 3vw, 2.8rem);
-  line-height: .94;
-  letter-spacing: -.05em;
-}
-
-.topic-copy p {
-  margin: 0;
-  max-width: 520px;
-  color: rgba(255,255,255,.86);
-  font-size: .88rem;
-  line-height: 1.3;
-}
-
-.topic-meta {
-  margin-top: 10px;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.topic-chip {
-  border: 1px solid rgba(255,255,255,.32);
-  background: rgba(255,255,255,.10);
-  color: white;
-  border-radius: 999px;
-  padding: 4px 7px;
-  font-size: .72rem;
-  font-weight: 800;
-}
-
-@media (max-height: 760px) and (min-width: 761px) {
-  .home-shell { padding-top: 12px; padding-bottom: 12px; gap: 10px; }
-  .brand h1 { font-size: 3.2rem; }
-  .brand p { margin-top: 5px; font-size: .88rem; }
-  .topic-grid { gap: 9px; }
-  .topic-copy { padding: 14px; }
-  .topic-copy h2 { font-size: 1.8rem; }
-  .topic-copy p { font-size: .8rem; }
-  .topic-meta { margin-top: 7px; }
+@media (max-height:760px) and (min-width:761px) {
+  .home-shell { padding-top:12px; padding-bottom:12px; gap:10px; }
+  .brand h1 { font-size:3.2rem; }
+  .brand p { margin-top:5px; font-size:.88rem; }
+  .topic-grid { gap:10px; }
+  .topic-copy { padding:11px 14px 10px; }
+  .topic-copy h2 { font-size:1.7rem; }
+  .topic-copy p { font-size:.75rem; }
+  .topic-meta { margin-top:6px; }
 }
 
 /* ============================================================================
