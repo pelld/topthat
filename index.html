@@ -555,7 +555,8 @@ button { font: inherit; }
    00F. MOBILE
    ============================================================================ */
 
-.mobile-result-overlay {
+.mobile-result-overlay,
+.mobile-choice-overlay {
   display: none;
 }
 
@@ -790,6 +791,7 @@ button { font: inherit; }
     font-size: .74rem;
   }
 
+  .mobile-choice-overlay,
   .mobile-result-overlay {
     position: fixed;
     inset: 0;
@@ -801,8 +803,48 @@ button { font: inherit; }
     pointer-events: none;
   }
 
+  .mobile-choice-overlay.hidden,
   .mobile-result-overlay.hidden {
     display: none !important;
+  }
+
+  .mobile-choice-box,
+  .mobile-result-box {
+    width: min(330px, 92vw);
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    background: #fffdf8;
+    box-shadow: 6px 6px 0 var(--ink);
+    padding: 18px;
+    text-align: center;
+  }
+
+  .mobile-choice-title {
+    margin-top: 4px;
+    font-size: 1.35rem;
+    font-weight: 950;
+  }
+
+  .mobile-choice-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .mobile-choice-btn {
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    background: #fffdf8;
+    color: var(--ink);
+    padding: 15px 8px;
+    cursor: pointer;
+    font-weight: 950;
+    font-size: 1rem;
+  }
+
+  .mobile-choice-btn:active {
+    transform: translateY(1px);
   }
 
   .mobile-result-box {
@@ -1033,6 +1075,17 @@ button { font: inherit; }
 
   </div>
 </section>
+
+<div class="mobile-choice-overlay hidden" id="mobileChoiceOverlay">
+  <div class="mobile-choice-box">
+    <div class="mobile-result-kicker">Choose direction</div>
+    <div class="mobile-choice-title" id="mobileChoiceTitle">Top speed</div>
+    <div class="mobile-choice-actions">
+      <button class="mobile-choice-btn" type="button" data-mobile-direction="high">↑ HIGH</button>
+      <button class="mobile-choice-btn" type="button" data-mobile-direction="low">↓ LOW</button>
+    </div>
+  </div>
+</div>
 
 <div class="mobile-result-overlay hidden" id="mobileResultOverlay" aria-live="polite">
   <div class="mobile-result-box" id="mobileResultBox">
@@ -1309,6 +1362,13 @@ function showMobileResult(type, title, detail, actionLabel, action) {
   return true;
 }
 
+document.querySelectorAll("[data-mobile-direction]").forEach(button => {
+  button.addEventListener("click", () => {
+    document.getElementById("mobileChoiceOverlay").classList.add("hidden");
+    selectDirection(button.dataset.mobileDirection);
+  });
+});
+
 document.getElementById("mobileResultAction").addEventListener("click", () => {
   const overlay = document.getElementById("mobileResultOverlay");
   const action = mobileResultAction;
@@ -1375,25 +1435,32 @@ function selectStat(statKey) {
 
   const meta = currentTopic.stats.find(d => d.key === statKey);
 
-  document.getElementById("resultText").className = "result";
-  document.getElementById("resultText").innerHTML = `
-    <div class="direction-picker">
-      <button class="direction-btn" type="button" data-direction="high">
-        ↑ Highest wins
-      </button>
-      <button class="direction-btn" type="button" data-direction="low">
-        ↓ Lowest wins
-      </button>
-    </div>
-  `;
+  if (window.matchMedia("(max-width: 760px)").matches) {
+    document.getElementById("mobileChoiceTitle").textContent = meta.label;
+    document.getElementById("mobileChoiceOverlay").classList.remove("hidden");
+
+    document.getElementById("resultText").className = "result";
+    document.getElementById("resultText").innerHTML = `
+      ${meta.label}
+      <small>Choose high or low</small>
+    `;
+  } else {
+    document.getElementById("resultText").className = "result";
+    document.getElementById("resultText").innerHTML = `
+      <div class="direction-picker">
+        <button class="direction-btn" type="button" data-direction="high">↑ Highest wins</button>
+        <button class="direction-btn" type="button" data-direction="low">↓ Lowest wins</button>
+      </div>
+    `;
+
+    document.querySelectorAll("[data-direction]").forEach(button => {
+      button.addEventListener("click", () => selectDirection(button.dataset.direction));
+    });
+  }
 
   document.getElementById("instruction").innerHTML = `
-    <strong>${meta.label}</strong> selected. Now choose whether the <strong>highest</strong> or <strong>lowest</strong> value wins.
+    <strong>${meta.label}</strong> selected. Choose high or low.
   `;
-
-  document.querySelectorAll("[data-direction]").forEach(button => {
-    button.addEventListener("click", () => selectDirection(button.dataset.direction));
-  });
 }
 
 function selectDirection(direction) {
