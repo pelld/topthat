@@ -94,87 +94,43 @@ button { font: inherit; }
   box-shadow: 7px 7px 0 var(--ink);
 }
 
-/* Flat, literal illustrations: recognisable objects, no atmospheric shading. */
+/* Photographic topic images: recognisable at a glance. */
 .topic-visual {
-  position: absolute;
-  inset: 0 0 40% 0;
-  background: #efe8d8;
-  border-bottom: 2px solid var(--ink);
-  overflow: hidden;
+  position:absolute;
+  inset:0 0 40% 0;
+  border-bottom:2px solid var(--ink);
+  overflow:hidden;
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
 }
 
 .topic-visual::before,
-.topic-visual::after { content:""; position:absolute; }
+.topic-visual::after { display:none; }
 
-/* ANIMALS — a side-on elephant: body, head, trunk and legs. */
-.topic-card.animals .topic-visual { background:#dbe6cf; }
-.topic-card.animals .topic-visual::before {
-  width: 145px; height: 78px; right: 48px; top: 34px;
-  background:#65765b; border:3px solid var(--ink); border-radius:48% 52% 40% 38%;
-  box-shadow: -5px 67px 0 -29px #65765b, 64px 67px 0 -29px #65765b;
+.topic-card.animals .topic-visual {
+  background-image:url("https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/TheCheethcat.jpg/800px-TheCheethcat.jpg");
+  background-position:center 42%;
 }
-.topic-card.animals .topic-visual::after {
-  width:52px; height:52px; right:24px; top:48px;
-  background:#65765b; border:3px solid var(--ink); border-radius:50%;
-  box-shadow: 25px 32px 0 -19px var(--ink), 31px 54px 0 -22px var(--ink);
+.topic-card.countries .topic-visual {
+  background-image:url("https://eoimages.gsfc.nasa.gov/images/imagerecords/57000/57752/land_ocean_ice_2048.jpg");
+  background-position:center 45%;
 }
-
-/* COUNTRIES — a simple globe with latitude/longitude lines. */
-.topic-card.countries .topic-visual { background:#d8e6e5; }
-.topic-card.countries .topic-visual::before {
-  width:112px; height:112px; right:45px; top:22px;
-  border:3px solid var(--ink); border-radius:50%; background:#f8f3e7;
+.topic-card.space .topic-visual {
+  background-image:url("https://science.nasa.gov/wp-content/uploads/2023/05/hubble-saturn-jpg.webp");
+  background-position:center;
 }
-.topic-card.countries .topic-visual::after {
-  width:88px; height:3px; right:57px; top:76px; background:var(--ink);
-  box-shadow:0 -26px 0 -1px var(--ink),0 26px 0 -1px var(--ink);
+.topic-card.vehicles .topic-visual {
+  background-image:url("https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Routemaster_RM1562.jpg/800px-Routemaster_RM1562.jpg");
+  background-position:center 52%;
 }
-
-/* SPACE — Saturn, drawn as a planet rather than abstract circles. */
-.topic-card.space .topic-visual { background:#dfe4f1; }
-.topic-card.space .topic-visual::before {
-  width:76px; height:76px; right:60px; top:38px;
-  background:#e3b95f; border:3px solid var(--ink); border-radius:50%;
+.topic-card.big-things .topic-visual {
+  background-image:url("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Tour_Eiffel_Wikimedia_Commons.jpg/800px-Tour_Eiffel_Wikimedia_Commons.jpg");
+  background-position:center 42%;
 }
-.topic-card.space .topic-visual::after {
-  width:142px; height:42px; right:26px; top:52px;
-  border:4px solid var(--ink); border-radius:50%; transform:rotate(-13deg);
-}
-
-/* VEHICLES — a literal double-decker bus. */
-.topic-card.vehicles .topic-visual { background:#e7ded1; }
-.topic-card.vehicles .topic-visual::before {
-  width:154px; height:82px; right:34px; top:31px;
-  background:#b64b3d; border:3px solid var(--ink); border-radius:8px 12px 5px 5px;
-}
-.topic-card.vehicles .topic-visual::after {
-  width:24px; height:24px; right:58px; top:99px;
-  background:#fffdf8; border:3px solid var(--ink); border-radius:50%;
-  box-shadow:-79px 0 0 -3px #fffdf8,-79px 0 0 0 var(--ink);
-}
-
-/* BIG THINGS — a simplified Eiffel Tower silhouette. */
-.topic-card.big-things .topic-visual { background:#eadfc9; }
-.topic-card.big-things .topic-visual::before {
-  width:100px; height:116px; right:54px; top:16px;
-  background:var(--ink);
-  clip-path:polygon(46% 0,54% 0,60% 38%,88% 100%,70% 100%,57% 66%,43% 66%,30% 100%,12% 100%,40% 38%);
-}
-.topic-card.big-things .topic-visual::after {
-  width:118px; height:3px; right:45px; top:129px; background:var(--ink);
-}
-
-/* CHAOS — three recognisable mini-objects deliberately colliding. */
-.topic-card.chaos .topic-visual { background:#eadcf0; }
-.topic-card.chaos .topic-visual::before {
-  width:82px; height:42px; right:96px; top:31px;
-  background:#5f748a; border:3px solid var(--ink); border-radius:50% 55% 45% 50%;
-  transform:rotate(-8deg);
-}
-.topic-card.chaos .topic-visual::after {
-  width:76px; height:42px; right:31px; top:83px;
-  background:#b64b3d; border:3px solid var(--ink); border-radius:7px;
-  box-shadow:-50px 29px 0 -17px #fffdf8,-50px 29px 0 -14px var(--ink);
+.topic-card.chaos .topic-visual {
+  background-image:url("https://www.montereybayaquarium.org/globalassets/mba/images/animals/marine-mammals/blue-whale-011369_cmikejohnson.jpg");
+  background-position:center 45%;
 }
 
 .topic-copy {
