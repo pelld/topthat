@@ -1625,13 +1625,8 @@ function playRound() {
       `;
 
       updateScore();
-      const mobileWin = showMobileResult(
-        "win",
-        "WIN",
-        `${currentCard.name}: ${formatValue(meta, currentValue)} beats ${challengerCard.name}: ${formatValue(meta, challengerValue)}`,
-        "Keep going",
-        () => cascadeWin(challengerSide)
-      );
+      // A win should flow straight on; only a loss interrupts with a modal.
+      setTimeout(() => cascadeWin(challengerSide), 1100);
 
 
 
