@@ -1,4 +1,4 @@
-# Beat the Card — site mock-up
+# Top That
 
 This mock-up turns the single-deck prototype into a small site.
 
